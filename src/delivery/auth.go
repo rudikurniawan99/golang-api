@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type authDelivery struct {
@@ -53,8 +54,21 @@ func (d *authDelivery) StoreUserHandler(c *gin.Context) {
 }
 
 func (d *authDelivery) LoginHanler(c *gin.Context) {
-	req := model.UserRequest{}
-	c.Bind(&req)
+	validate := validator.New()
+	req := &model.UserRequest{}
+
+	c.Bind(req)
+
+	// add validation
+	errValidation := validate.Struct(req)
+
+	if errValidation != nil {
+		c.JSON(400, gin.H{
+			"message": "failed request",
+			"error":   errValidation.Error(),
+		})
+		return
+	}
 
 	user := model.User{
 		Email:    req.Email,
@@ -70,7 +84,6 @@ func (d *authDelivery) LoginHanler(c *gin.Context) {
 			"error":   err.Error(),
 		})
 	} else {
-		log.Println(user)
 		errCompare := d.userUsecase.ComparePasswordUsercase(user.Password, req.Password)
 
 		log.Println(errCompare)
