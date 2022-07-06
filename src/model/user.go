@@ -18,8 +18,8 @@ type (
 
 	UserUsecase interface {
 		RegisterUsecase(user *User) error
-		FindUserByEmailUsercase(user *User) error
-		ComparePasswordUsercase(hasPassword, password string) error
+		FindUserByEmailUsecase(user *User) error
+		ComparePasswordUsecase(hasPassword, password string) error
 	}
 
 	UserRepository interface {

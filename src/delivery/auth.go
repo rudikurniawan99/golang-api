@@ -75,7 +75,7 @@ func (d *authDelivery) LoginHanler(c *gin.Context) {
 		Password: req.Password,
 	}
 
-	err := d.userUsecase.FindUserByEmailUsercase(&user)
+	err := d.userUsecase.FindUserByEmailUsecase(&user)
 
 	if err != nil {
 		c.JSON(400, gin.H{
@@ -84,7 +84,7 @@ func (d *authDelivery) LoginHanler(c *gin.Context) {
 			"error":   err.Error(),
 		})
 	} else {
-		errCompare := d.userUsecase.ComparePasswordUsercase(user.Password, req.Password)
+		errCompare := d.userUsecase.ComparePasswordUsecase(user.Password, req.Password)
 
 		log.Println(errCompare)
 		if errCompare != nil {
