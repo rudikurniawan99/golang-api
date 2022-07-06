@@ -19,11 +19,13 @@ type (
 	UserUsecase interface {
 		RegisterUsecase(user *User) error
 		FindUserByEmailUsecase(user *User) error
+		FindUserById(user *User, id string) error
 		ComparePasswordUsecase(hasPassword, password string) error
 	}
 
 	UserRepository interface {
 		Create(u *User) error
 		Fetch(u *User) error
+		GetById(u *User, id string) error
 	}
 )

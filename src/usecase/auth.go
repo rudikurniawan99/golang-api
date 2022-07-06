@@ -32,6 +32,15 @@ func (uc *userUsecase) FindUserByEmailUsecase(user *model.User) error {
 
 }
 
+func (uc *userUsecase) FindUserById(user *model.User, id string) error {
+	err := uc.userRepository.GetById(user, id)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (uc *userUsecase) ComparePasswordUsecase(hashPassword, password string) error {
 
 	err := bcrypt.CompareHashAndPassword([]byte(hashPassword), []byte(password))

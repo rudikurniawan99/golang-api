@@ -25,6 +25,33 @@ func NewDelivery(uc model.UserUsecase) AuthDelivery {
 func (d *authDelivery) Mount(group *gin.RouterGroup) {
 	group.POST("register", d.StoreUserHandler)
 	group.POST("login", d.LoginHanler)
+	group.GET("me", d.GetCurrentUserHanlder)
+}
+
+func (d *authDelivery) GetCurrentUserHanlder(c *gin.Context) {
+	token := c.Request.Header.Get("token")
+
+	id, errValToken := helper.ValidateToken(token)
+	if errValToken != nil {
+		c.JSON(401, gin.H{
+			"message": "not authorized",
+		})
+		return
+	}
+
+	user := &model.User{}
+	err := d.userUsecase.FindUserById(user, id)
+
+	if err != nil {
+		c.JSON(401, gin.H{
+			"message": "not authorized",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"message": "authorized",
+			"data":    user,
+		})
+	}
 }
 
 func (d *authDelivery) StoreUserHandler(c *gin.Context) {

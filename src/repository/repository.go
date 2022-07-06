@@ -29,6 +29,15 @@ func (r *userRepository) Fetch(user *model.User) error {
 	return nil
 }
 
+func (r *userRepository) GetById(user *model.User, id string) error {
+	err := r.db.First(&user, id).Error
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // func (r *userRepository) GetByEmail(email string) (model.User, error) {
 // 	user := model.User{}
 
