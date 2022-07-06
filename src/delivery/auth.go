@@ -1,8 +1,8 @@
 package delivery
 
 import (
+	"api-2/src/helper"
 	"api-2/src/model"
-	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -25,16 +25,33 @@ func NewDelivery(uc model.UserUsecase) AuthDelivery {
 func (d *authDelivery) Mount(group *gin.RouterGroup) {
 	group.POST("register", d.StoreUserHandler)
 	group.POST("login", d.LoginHanler)
-	group.POST("test", d.TestRequest)
 }
 
 func (d *authDelivery) StoreUserHandler(c *gin.Context) {
+	validate := validator.New()
 	req := model.UserRequest{}
 	c.Bind(&req)
+
+	errValidation := validate.Struct(req)
+	if errValidation != nil {
+		c.JSON(400, gin.H{
+			"message": "failed request",
+			"error":   errValidation.Error(),
+		})
+		return
+	}
 
 	user := model.User{
 		Email:    req.Email,
 		Password: req.Password,
+	}
+
+	errEmailExist := d.userUsecase.FindUserByEmailUsecase(&user)
+	if errEmailExist == nil {
+		c.JSON(400, gin.H{
+			"message": "failed, email already exist",
+		})
+		return
 	}
 
 	err := d.userUsecase.RegisterUsecase(&user)
@@ -42,13 +59,14 @@ func (d *authDelivery) StoreUserHandler(c *gin.Context) {
 	if err != nil {
 		c.JSON(400, gin.H{
 			"message": "failed",
-			"data":    nil,
 			"error":   err.Error(),
 		})
 	} else {
+		token, _ := helper.GenerateToken(int(user.ID))
+
 		c.JSON(201, gin.H{
 			"message": "success",
-			"data":    user,
+			"token":   token,
 		})
 	}
 }
@@ -93,31 +111,12 @@ func (d *authDelivery) LoginHanler(c *gin.Context) {
 				"error":   err.Error(),
 			})
 		} else {
+			token, _ := helper.GenerateToken(int(user.ID))
+
 			c.JSON(200, gin.H{
 				"message": "success",
-				"data":    user,
+				"token":   token,
 			})
 		}
 	}
-}
-
-func (d *authDelivery) TestRequest(c *gin.Context) {
-	req := &model.UserRequest{}
-	c.Bind(req)
-
-	log.Printf("== %T", req)
-
-	user := &model.User{
-		Email: req.Email,
-		// Password: []byte(req.Password),
-	}
-
-	log.Printf("== %T", *user)
-
-	c.JSON(200, gin.H{
-		"data": gin.H{
-			"req":      req,
-			"userData": user,
-		},
-	})
 }
