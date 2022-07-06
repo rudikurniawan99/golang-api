@@ -8,7 +8,7 @@ import (
 )
 
 type jwtClaim struct {
-	id string
+	ID string `json:"id"`
 	jwt.RegisteredClaims
 }
 
@@ -27,6 +27,23 @@ func GenerateToken(id int) (string, error) {
 		return "", err
 	} else {
 		return signedToken, err
+	}
+}
+
+func ValidateToken(signedToken string) (string, error) {
+	token, err := jwt.ParseWithClaims(
+		signedToken,
+		&jwtClaim{},
+		func(t *jwt.Token) (interface{}, error) {
+			return []byte(os.Getenv("PUBLIC_KEY")), nil
+		},
+	)
+
+	claims, ok := token.Claims.(*jwtClaim)
+	if ok && token.Valid {
+		return claims.ID, nil
+	} else {
+		return claims.ID, err
 	}
 
 }

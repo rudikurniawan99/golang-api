@@ -86,9 +86,7 @@ func (d *authDelivery) LoginHanler(c *gin.Context) {
 	} else {
 		errCompare := d.userUsecase.ComparePasswordUsecase(user.Password, req.Password)
 
-		log.Println(errCompare)
 		if errCompare != nil {
-
 			c.JSON(400, gin.H{
 				"message": "password not match",
 				"data":    nil,
