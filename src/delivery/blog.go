@@ -27,6 +27,7 @@ func NewBlogDelivery(ub model.BlogUsecase, uu model.UserUsecase) BlogDelivery {
 
 func (d *blogDelivery) Mount(group *gin.RouterGroup) {
 	group.POST("", middleware.Authorize(), d.CreateHanlder)
+	group.GET(":id", d.FindByIdHandler)
 }
 
 func (d *blogDelivery) CreateHanlder(c *gin.Context) {
@@ -62,6 +63,35 @@ func (d *blogDelivery) CreateHanlder(c *gin.Context) {
 		c.JSON(201, gin.H{
 			"status":  "success",
 			"message": "success create blog",
+			"data":    blog,
+		})
+	}
+}
+
+func (d *blogDelivery) FindByIdHandler(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		c.JSON(404, gin.H{
+			"status":  "failed",
+			"message": "not found",
+		})
+		return
+	}
+
+	blog := &model.Blog{}
+
+	errBlog := d.blogUsecase.FindByIdUsecase(blog, id)
+
+	if errBlog != nil {
+		c.JSON(404, gin.H{
+			"status":  "failed",
+			"message": "not found",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"status":  "success",
+			"message": "get blog data",
 			"data":    blog,
 		})
 	}

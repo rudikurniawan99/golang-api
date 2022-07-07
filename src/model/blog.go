@@ -17,9 +17,13 @@ type (
 
 	BlogUsecase interface {
 		CreateUsecase(blog *Blog) error
+		DeleteUsecase(id int) error
+		FindByIdUsecase(blog *Blog, id int) error
 	}
 
 	BlogRepository interface {
 		Create(blog *Blog) error
+		Delete(id int) error
+		FindById(blog *Blog, id int) error
 	}
 )
