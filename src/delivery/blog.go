@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"api-2/src/helper"
+	"api-2/src/middleware"
 	"api-2/src/model"
 	"strconv"
 
@@ -25,7 +26,7 @@ func NewBlogDelivery(ub model.BlogUsecase, uu model.UserUsecase) BlogDelivery {
 }
 
 func (d *blogDelivery) Mount(group *gin.RouterGroup) {
-	group.POST("", d.CreateHanlder)
+	group.POST("", middleware.Authorize(), d.CreateHanlder)
 }
 
 func (d *blogDelivery) CreateHanlder(c *gin.Context) {
@@ -33,17 +34,11 @@ func (d *blogDelivery) CreateHanlder(c *gin.Context) {
 	req := model.BlogRequest{}
 	c.Bind(&req)
 
-	if token == "" {
-		c.JSON(401, gin.H{
-			"message": "unauthorized",
-		})
-	}
-
 	id, errValToken := helper.ValidateToken(token)
 
 	if errValToken != nil {
 		c.JSON(401, gin.H{
-			"message": "not authorized",
+			"message": "unauthorized",
 		})
 		return
 	}

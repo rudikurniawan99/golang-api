@@ -39,6 +39,10 @@ func ValidateToken(signedToken string) (string, error) {
 		},
 	)
 
+	if err != nil {
+		return "", err
+	}
+
 	claims, ok := token.Claims.(*jwtClaim)
 	if ok && token.Valid {
 		return claims.ID, nil
