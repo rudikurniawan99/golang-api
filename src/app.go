@@ -40,9 +40,14 @@ func (s *server) Run() {
 	userRepository := repository.NewRepository(s.database)
 	userUsecase := usecase.NewUserUsecase(userRepository)
 	authDelivery := delivery.NewDelivery(userUsecase)
-
 	authGroup := s.httpServer.Group("auth")
 	authDelivery.Mount(authGroup)
+
+	blogRepository := repository.NewBlogRepository(s.database)
+	blogUsecase := usecase.NewBlogUsecase(blogRepository)
+	blogDelivery := delivery.NewBlogDelivery(blogUsecase, userUsecase)
+	blogGroup := s.httpServer.Group("blog")
+	blogDelivery.Mount(blogGroup)
 
 	s.httpServer.Run(":8082")
 }

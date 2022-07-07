@@ -125,7 +125,6 @@ func (d *authDelivery) LoginHanler(c *gin.Context) {
 	if err != nil {
 		c.JSON(400, gin.H{
 			"message": "email not found",
-			"data":    nil,
 			"error":   err.Error(),
 		})
 	} else {
@@ -134,7 +133,6 @@ func (d *authDelivery) LoginHanler(c *gin.Context) {
 		if errCompare != nil {
 			c.JSON(400, gin.H{
 				"message": "password not match",
-				"data":    nil,
 				"error":   err.Error(),
 			})
 		} else {

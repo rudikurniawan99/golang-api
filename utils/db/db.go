@@ -42,7 +42,7 @@ func Connect() *gorm.DB {
 	)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.User{}, &model.Blog{})
 
 	if err != nil {
 		log.Println("===")
