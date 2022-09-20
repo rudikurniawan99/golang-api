@@ -26,6 +26,7 @@ func (d *authDelivery) Mount(group *gin.RouterGroup) {
 	group.POST("register", d.StoreUserHandler)
 	group.POST("login", d.LoginHanler)
 	group.GET("me", d.GetCurrentUserHanlder)
+	group.GET("users", d.GetUserHandler)
 }
 
 func (d *authDelivery) GetCurrentUserHanlder(c *gin.Context) {
@@ -52,6 +53,25 @@ func (d *authDelivery) GetCurrentUserHanlder(c *gin.Context) {
 			"data":    user,
 		})
 	}
+}
+
+func (d *authDelivery) GetUserHandler(c *gin.Context) {
+	users := &[]model.User{}
+	err := d.userUsecase.GetAllUserUsecase(users)
+
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": "failed",
+			"data":    nil,
+			"error":   err,
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"message": "success",
+			"data":    users,
+		})
+	}
+
 }
 
 func (d *authDelivery) StoreUserHandler(c *gin.Context) {

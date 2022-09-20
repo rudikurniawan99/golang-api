@@ -38,6 +38,15 @@ func (r *userRepository) GetById(user *model.User, id string) error {
 	return nil
 }
 
+func (r *userRepository) GetAll(user *[]model.User) error {
+	err := r.db.Find(&user).Error
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // func (r *userRepository) GetByEmail(email string) (model.User, error) {
 // 	user := model.User{}
 

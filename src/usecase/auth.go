@@ -52,6 +52,16 @@ func (uc *userUsecase) ComparePasswordUsecase(hashPassword, password string) err
 	return nil
 }
 
+func (uc *userUsecase) GetAllUserUsecase(user *[]model.User) error {
+	err := uc.userRepository.GetAll(user)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func NewUserUsecase(ur model.UserRepository) model.UserUsecase {
 	return &userUsecase{
 		userRepository: ur,
